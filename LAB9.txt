@@ -1,0 +1,102 @@
+CREATE DATABASE ResourceManagementSystem;
+
+# Create ResourceProviders table
+CREATE TABLE ResourceProviders (
+    id VARCHAR(10) PRIMARY KEY,
+    name VARCHAR(20) NOT NULL UNIQUE ,
+    email VARCHAR(30) NOT NULL UNIQUE
+);
+
+# Create Resources table
+CREATE TABLE Resources (
+    id VARCHAR(10) PRIMARY KEY,
+     name VARCHAR(20) NOT NULL ,
+     type VARCHAR(20) NOT NULL ,
+    provider_id VARCHAR(10),
+FOREIGN KEY (provider_id) REFERENCES ResourceProviders(id)
+);
+
+# Create Startups table
+CREATE TABLE Startups(
+    id VARCHAR(10) PRIMARY KEY,
+    name VARCHAR(20) NOT NULL UNIQUE,
+    sector VARCHAR(20) NOT NULL,
+    email  VARCHAR(30) NOT NULL UNIQUE
+);
+
+# Create ResourceRequests table
+CREATE TABLE ResourceRequests(
+    id VARCHAR(10) PRIMARY KEY,
+    startup_id VARCHAR(10),
+    resource_id VARCHAR(10),
+    description TEXT NOT NULL,
+    request_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR(10) CHECK ( status= 'Pending' or status= 'Approved' or status= 'Rejected'),
+    agreement_percentage DOUBLE NOT NULL,
+     FOREIGN KEY (startup_id) REFERENCES Startups(id),
+    FOREIGN KEY (resource_id) REFERENCES Resources(id)
+);
+
+# Create Rates table
+CREATE TABLE Rates(
+    id VARCHAR(10) PRIMARY KEY,
+    request_id VARCHAR(10),
+       comments TEXT NOT NULL,
+    rated_at TIMESTAMP NOT NULL,
+    FOREIGN KEY (request_id) REFERENCES ResourceRequests(id)
+);
+
+
+# Add new ResourceProviders
+INSERT INTO ResourceProviders VALUES ('RP001', 'CloudCorp', 'cloudcorp@gmail.com');
+INSERT INTO ResourceProviders VALUES ('RP002', 'SpaceHub', 'spacehub@gmail.com');
+INSERT INTO ResourceProviders VALUES ('RP003', 'TechShare', 'techshare@gmail.com');
+INSERT INTO ResourceProviders VALUES ('RP004', 'OfficeLend', 'officelend@gmail.com');
+INSERT INTO ResourceProviders VALUES ('RP005', 'DevicePool', 'devicepool@gmail.com');
+
+# retrieve all ResourceProviders
+SELECT * FROM ResourceProviders;
+
+
+# Add new Resources
+INSERT INTO Resources VALUES ('R001', 'MacBook Pro', 'Device', 'RP003');
+INSERT INTO Resources VALUES ('R002', 'AWS Credits', 'Cloud', 'RP001');
+INSERT INTO Resources VALUES ('R003', 'Office Desk', 'Space', 'RP004');
+INSERT INTO Resources VALUES ('R004', 'Google Cloud', 'Cloud', 'RP001');
+INSERT INTO Resources VALUES ('R005', 'Shared Lab', 'Space', 'RP002');
+
+# retrieve all Resources
+SELECT * FROM Resources;
+
+
+# Add new Startups
+INSERT INTO Startups VALUES ('S001', 'InnoTech', 'AI', 'innotech@gmail.com');
+INSERT INTO Startups VALUES ('S002', 'GreenX', 'Energy', 'greenx@gmail.com');
+INSERT INTO Startups VALUES ('S003', 'FoodFast', 'Delivery', 'foodfast@gmail.com');
+INSERT INTO Startups VALUES ('S004', 'HealthLink', 'Healthcare', 'healthlink@gmail.com');
+INSERT INTO Startups VALUES ('S005', 'EduNex', 'EdTech', 'edunex@gmail.com');
+
+# retrieve all Startups
+SELECT * FROM Startups;
+
+
+# Add new ResourceRequests
+INSERT INTO ResourceRequests (id, startup_id, resource_id, description, status, agreement_percentage) VALUES ('RR001', 'S001', 'R001', 'Need a MacBook for ML model training.', 'Approved', 2.5);
+INSERT INTO ResourceRequests (id, startup_id, resource_id, description, status, agreement_percentage) VALUES ('RR002', 'S002', 'R002', 'Need AWS credits for green energy simulation.', 'Pending', 1.5);
+INSERT INTO ResourceRequests (id, startup_id, resource_id, description, status, agreement_percentage) VALUES ('RR003', 'S003', 'R003', 'Require space for packaging operations.', 'Approved', 3.0);
+INSERT INTO ResourceRequests (id, startup_id, resource_id, description, status, agreement_percentage) VALUES ('RR004', 'S004', 'R005', 'Need access to lab for health product testing.', 'Rejected', 2.0);
+INSERT INTO ResourceRequests (id, startup_id, resource_id, description, status, agreement_percentage) VALUES ('RR005', 'S005', 'R004', 'Need cloud resources for LMS hosting.',  'Approved', 1.8);
+
+# retrieve all ResourceRequests
+SELECT * FROM ResourceRequests;
+
+
+# Add new Rates
+INSERT INTO Rates (id, request_id, comments) VALUES ('RA001', 'RR001', 'Excellent laptop, worked perfectly.');
+INSERT INTO Rates (id, request_id, comments) VALUES ('RA002', 'RR003', 'Clean and accessible space, very helpful.');
+INSERT INTO Rates (id, request_id, comments) VALUES ('RA003', 'RR005', 'Reliable cloud service with great performance.');
+INSERT INTO Rates (id, request_id, comments) VALUES ('RA004', 'RR002', 'Still waiting for approval, unclear process.');
+INSERT INTO Rates (id, request_id, comments) VALUES ('RA005', 'RR004', 'Request was rejected with no feedback.');
+
+# retrieve all Rates
+SELECT * FROM Rates;
